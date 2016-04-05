@@ -1,0 +1,29 @@
+{
+  "name": "react-l",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/burmisov/react-l.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/burmisov/react-l/issues"
+  },
+  "homepage": "https://github.com/burmisov/react-l#readme",
+  "dependencies": {
+    "leaflet": "^1.0.0-beta.2",
+    "react": "^15.0.0-rc.2",
+    "react-dom": "^15.0.0-rc.2",
+    "webpack": "^1.12.14"
+  },
+  "devDependencies": {
+    "babel-core": "^6.7.4",
+    "babel-loader": "^6.2.4"
+  }
+}
