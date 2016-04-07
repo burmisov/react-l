@@ -52,14 +52,56 @@ const ContainerMixin = Object.assign({}, ReactMultiChild.Mixin, {
   },
 });
 
+const MapContainer = React.createClass({
+  displayName: 'MapContainer',
+
+  propTypes: {
+    className: React.PropTypes.string,
+    style: React.PropTypes.object,
+    onMount: React.PropTypes.func.isRequired,
+  },
+
+  componentDidMount: function () {
+    this.props.onMount(ReactDOM.findDOMNode(this));
+  },
+
+  shouldComponentUpdate: function () {
+    return false;
+  },
+
+  render: function () {
+    return (
+      <div
+        className={ this.props.className }
+        style={ this.props.style }
+      />
+    );
+  },
+});
+
 const UMap = React.createClass({
   displayName: 'UMap',
 
   mixins: [ContainerMixin],
 
-  componentDidMount: function () {
-    const domNode = ReactDOM.findDOMNode(this);
+  componentDidUpdate: function(oldProps) {
+    const transaction = ReactUpdates.ReactReconcileTransaction.getPooled();
+    transaction.perform(
+      this.updateChildren,
+      this,
+      this.props.children,
+      transaction,
+      ReactInstanceMap.get(this)._context
+    );
+    ReactUpdates.ReactReconcileTransaction.release(transaction);
+    // console.log(this.name || this.displayName, 'cdu', arguments);
+  },
 
+  componentWillUnmount: function () {
+    this.unmountChildren();
+  },
+
+  handleContainerMount: function (domNode) {
     const leafletMap = L.map(domNode, { /* options */ });
 
     this.node = {
@@ -77,24 +119,15 @@ const UMap = React.createClass({
     ReactUpdates.ReactReconcileTransaction.release(transaction);
   },
 
-  componentDidUpdate: function(oldProps) {
-    console.log(this.name || this.displayName, 'cdu', arguments);
-  },
-
-  componentWillUnmount: function () {
-    this.unmountChildren();
-  },
-
-  shouldComponentUpdate: function() {
-    return false; // !!
-  },
-
   render: function () {
     return (
-      <div
+      <MapContainer
+        onMount={ this.handleContainerMount }
         className={ this.props.className }
         style={ this.props.style }
-      />
+      >
+        { this.props.children }
+      </MapContainer>
     );
   },
 });
@@ -102,10 +135,21 @@ const UMap = React.createClass({
 //------------
 
 const MyMap = React.createClass({
+  getInitialState: function () {
+    return { other: false };
+  },
+
+  componentDidMount: function () {
+    setTimeout(() => {
+      this.setState({ other: true });
+    }, 3000);
+  },
+
   render: function () {
     return (
       <UMap>
         <p>Some text</p>
+        { this.state.other ? <span>hello</span> : null }
       </UMap>
     );
   },
